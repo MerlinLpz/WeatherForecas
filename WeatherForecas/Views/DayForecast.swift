@@ -28,23 +28,53 @@ struct DayForecast: View { //necesita datos → recibe DayWeather
 //¿weather.high es mayor que 70?  →  sí → orange  →  no → primary
     }
     
+    //6️⃣ Computed Property gradiente de fondo
+    var backgroundGradient: LinearGradient { //🟠 forma corta de => if{} else{}
+        weather.isRainy ?
+        LinearGradient(colors: [Color.gray, Color.white], startPoint: .top, endPoint: .bottom) :
+        LinearGradient(colors: [Color.blue, Color.cyan], startPoint: .top, endPoint: .bottom)
+    }
+    
     var body: some View {
+        ZStack {
+            //Capa 1 - foondo Gradiente (abajo)
+            backgroundGradient
+                .cornerRadius(20)
+        
+            //Capa 2 - contenido de la card (arriba)
         VStack {
             Text(weather.day)
                 .font(Font.headline)
+                .foregroundStyle(Color.white)
+                .padding(.top, 10)
+            
+            // Badge aquí — antes del icono
+               Text(weather.isRainy ? "Rain" : weather.high > 75 ? "Hot" : "Sunny")
+                   .font(.caption2)
+                   .fontWeight(.semibold)
+                   .foregroundStyle(.white)
+                   .padding(.horizontal, 6)
+                   .padding(.vertical, 3)
+                   .background(.white.opacity(0.3))
+                   .clipShape(Capsule())
             Image(systemName: iconName)
                 .font(Font.largeTitle)
                 .foregroundStyle(iconColor)
                 .padding(5)
+                
             Text("High: \(weather.high)°")
                 .fontWeight(Font.Weight.semibold)
                 .foregroundStyle(highTempColor)
             Text("Low: \(weather.low)°")//Lo que está dentro de \() Swift lo convierte automáticamente a texto.
                 .fontWeight(Font.Weight.medium)
-                .foregroundStyle(Color.secondary)
+                .foregroundStyle(Color.white)
+                
         }
         .padding()
-        
+        }
+        .frame(width: 120, height: 170)
+        .cornerRadius(7) // antes era 12
+        .padding(5)
     }
 }
 

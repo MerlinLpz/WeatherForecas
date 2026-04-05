@@ -30,14 +30,17 @@ struct ContentView: View {
             WeekForecast(weekLabel: "Mar 31 - Apr 6", forecasts: days)
             
             //Cards individuales con Scroll - le dice a Swift que el scroll es hacia los lados ↔️
-        ScrollView(.horizontal) {
-            HStack {
-                ForEach(days, id: \.day) {weather in
-                    DayForecast(weather: weather)
+            ScrollView(.horizontal) {
+                HStack {
+                    ForEach(days, id: \.day) {weather in
+                        DayForecast(weather: weather)
+                    }
                 }
+                .padding(.leading)
             }
-            }
+            Spacer() //Empuja todo hacia arriba
         }
+        .padding(.top) //Espacio desde arriva
     }
 }
 
