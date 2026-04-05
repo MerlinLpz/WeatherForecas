@@ -5,21 +5,23 @@
 //  Created by mierlin on 04/04/2026.
 //
 
-import  SwiftUI
+import  SwiftUI  
 
 //paso 1️⃣ el molde struct WeekForecast:
-struct WeekForecast: View {
+struct WeekForecast: View {              //WeekForecast necesita datos → recibe [DayWeather]
     let weekLabel: String
-    let forecasts: [DayForecast]  // ← la lista de todos los días
+    let forecasts: [DayWeather]  // ✅ array de datos
     
     //PRIMERA Propieda Computada - Promedio de temperaturas altas
     var averageHigh: Int {
+        guard !forecasts.isEmpty else { return 0 }// Guardian
         let total = forecasts.reduce(0) { $0 + $1.high} //  Empieza en cero - Recorre toda la lista - Suma la propiedad que necesitas
         return total / forecasts.count                  //Divide entre cuántos hay
     }
     
     //SEGUNDA Propieda Computada - Promedio de temperaturas bajas
     var averageLow: Int {
+        guard !forecasts.isEmpty else { return 0} //🔐
         let total = forecasts.reduce(0) { $0 + $1.low} //.reduce → suma Es una función que recorre toda la lista y va sumando
         return total / forecasts.count
     }
@@ -43,7 +45,7 @@ struct WeekForecast: View {
                 Label("\(sunnyDays) sunny", systemImage: "sun.max.fill")
                     .foregroundStyle(Color.yellow)
                 Label("\(rainyDays) rainy", systemImage: "cloud.rain.fill")
-                    .foregroundStyle(Color.black)
+                    .foregroundStyle(Color.blue)
             }
             Text("AVG High: \(averageHigh)°")
                 .fontWeight(.semibold)
