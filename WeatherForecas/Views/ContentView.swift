@@ -42,7 +42,7 @@ struct ContentView: View {
             }
 
             //Resumen de la semana:
-            WeekForecast(weekLabel: "Mar 31 - Apr 6", forecasts: days)
+            WeekForecast(weekLabel: "Mar 31 - Apr 6", forecasts: days, isCelsius: isCelsius)
             
             //Cards individuales con Scroll - le dice a Swift que el scroll es hacia los lados ↔️
             ScrollView(.horizontal) {
