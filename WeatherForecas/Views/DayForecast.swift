@@ -10,6 +10,7 @@ import SwiftUI
 //Paso 2️⃣ - Encapsular Pronostico 
 struct DayForecast: View { //necesita datos → recibe DayWeather
     let weather: DayWeather
+    let isCelcius: Bool // ← nueva propiedad
     
     //3️⃣Creamos una propiedad calculada - para - let isRainy: Bool (lluvioso o soleado)
     var iconName: String {
@@ -33,6 +34,15 @@ struct DayForecast: View { //necesita datos → recibe DayWeather
         weather.isRainy ?
         LinearGradient(colors: [Color.gray, Color.white], startPoint: .top, endPoint: .bottom) :
         LinearGradient(colors: [Color.blue, Color.cyan], startPoint: .top, endPoint: .bottom)
+    }
+    
+    //7️⃣ Computed Property - Convierte temperatura según el estado
+    var displayHigh: Int {
+        isCelcius ? Int((Double(weather.high) - 32) * 5/9) : weather.high
+    }
+    
+    var displayLow: Int {
+        isCelcius ? Int((Double(weather.low) - 32) * 5/9) : weather.low
     }
     
     var body: some View {
@@ -62,10 +72,10 @@ struct DayForecast: View { //necesita datos → recibe DayWeather
                 .foregroundStyle(iconColor)
                 .padding(5)
                 
-            Text("High: \(weather.high)°")
+            Text("High: \(displayHigh)°")
                 .fontWeight(Font.Weight.semibold)
                 .foregroundStyle(highTempColor)
-            Text("Low: \(weather.low)°")//Lo que está dentro de \() Swift lo convierte automáticamente a texto.
+            Text("Low: \(displayLow)°")
                 .fontWeight(Font.Weight.medium)
                 .foregroundStyle(Color.white)
                 

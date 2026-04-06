@@ -21,11 +21,26 @@ struct ContentView: View {
         DayWeather(day: "Sun", isRainy: true,  high: 63, low: 47)
     ]
     
+    //🔄 Estado — false = Fahrenheit, true = Celsius
+    @State var isCelsius: Bool = false //  @State - Es clave para que la interfaz sea reactiva
     
     var body: some View {
         
         VStack{
             
+            //🔄 Botón para cambiar entre °F y °C
+            Button {
+                isCelsius.toggle()
+            } label: {
+                Text(isCelsius ? "Switch to °F" : "Switch to °C")
+                    .fontWeight(.semibold)
+                    .padding(.horizontal, 20)
+                    .padding(.vertical, 8)
+                    .background(Color.blue)
+                    .foregroundStyle(Color.white)
+                    .cornerRadius(20)
+            }
+
             //Resumen de la semana:
             WeekForecast(weekLabel: "Mar 31 - Apr 6", forecasts: days)
             
@@ -33,7 +48,7 @@ struct ContentView: View {
             ScrollView(.horizontal) {
                 HStack {
                     ForEach(days, id: \.day) {weather in
-                        DayForecast(weather: weather)
+                        DayForecast(weather: weather, isCelcius: isCelsius)
                     }
                 }
                 .padding(.leading)
