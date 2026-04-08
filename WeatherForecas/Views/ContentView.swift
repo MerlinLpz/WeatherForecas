@@ -23,45 +23,108 @@ struct ContentView: View {
     
     //🔄 Estado — false = Fahrenheit, true = Celsius
     @State var isCelsius: Bool = false //  @State - Es clave para que la interfaz sea reactiva
+    @State var state: ViewState = .loading //@State que guarda el estado actual
     
     var body: some View {
         
-        VStack{
+        switch state {
             
-            //🔄 Botón para cambiar entre °F y °C
-            Button {
-                isCelsius.toggle()
-            } label: {
-                Text(isCelsius ? "Switch to °F" : "Switch to °C")
-                    .fontWeight(.semibold)
-                    .padding(.horizontal, 20)
-                    .padding(.vertical, 8)
-                    .background(Color.blue)
-                    .foregroundStyle(Color.white)
-                    .cornerRadius(20)
+            //⏳ CArgando
+        case .loading:
+            VStack {
+                ProgressView()  // ← spinner girando
+                Text("Cargando clima...")
+                    .foregroundStyle(.secondary)
             }
-
-            //Resumen de la semana:
-            WeekForecast(weekLabel: "Mar 31 - Apr 6", forecasts: days, isCelsius: isCelsius)
+            .onAppear {
+                loadWeather()
+            }
             
-            //Cards individuales con Scroll - le dice a Swift que el scroll es hacia los lados ↔️
-            ScrollView(.horizontal) {
-                HStack {
-                    ForEach(days, id: \.day) {weather in
-                        DayForecast(weather: weather, isCelcius: isCelsius)
-                    }
+            //✅ Datos listos
+        case .success:
+            VStack{
+                
+                //🔄 Botón para cambiar entre °F y °C
+                Button {
+                    isCelsius.toggle()
+                } label: {
+                    Text(isCelsius ? "Switch to °F" : "Switch to °C")
+                        .fontWeight(.semibold)
+                        .padding(.horizontal, 20)
+                        .padding(.vertical, 8)
+                        .background(Color.blue)
+                        .foregroundStyle(Color.white)
+                        .cornerRadius(20)
                 }
-                .padding(.leading)
+                //Resumen de la semana:
+                WeekForecast(weekLabel: "Mar 31 - Apr 6", forecasts: days, isCelsius: isCelsius)
+                
+                //Cards individuales con Scroll - le dice a Swift que el scroll es hacia los lados ↔️
+                ScrollView(.horizontal) {
+                    HStack {
+                        ForEach(days, id: \.day) {weather in
+                            DayForecast(weather: weather, isCelcius: isCelsius)
+                        }
+                    }
+                    .padding(.leading)
+                }
+                Spacer() //Empuja todo hacia arriba
             }
-            Spacer() //Empuja todo hacia arriba
+            .padding(.top)
+            
+        case .error(let error):
+            VStack(spacing: 16) {
+                Image(systemName: "exclamationmark.triangle.fill")
+                    .font(.system(size: 50))
+                    .foregroundStyle(Color.orange)
+                Text(errorMessage(for: error))
+                    .multilineTextAlignment(.center)
+                    .foregroundStyle(Color.secondary)
+                Button("Reintar") {
+                    state = .loading
+                }
+                .padding(.horizontal, 20)
+                .padding(.vertical, 8)
+                .background(Color.blue)
+                .foregroundStyle(Color.white)
+                .cornerRadius(20)
+            }
+            .padding()
+            
+            
         }
-        .padding(.top) //Espacio desde arriva
+    }
+    // ⏳ Simula la carga del clima
+    func loadWeather() {
+        let service = WeatherService()
+        
+        do {
+            try service.fetchWeather(for: "Milano")
+            state = .success
+        }catch let error as WeatherError {
+            state = .error(error)
+        }catch {
+            state = .error(.unknown)
+        }
+    }
+    
+    func errorMessage(for error: WeatherError) -> String {
+        switch error {
+        case .noInternet:
+             "Sin conexión a internet 📡"  // Sin return — implicit return
+        case .invalidResponse:
+            "Respuesta incorrecta del servidor 🔧"
+        case .cityNotFound:
+           "Ciudad no encontrada 🗺️"      // Sin return — implicit return
+        case .unknown:
+          "Algo salió mal. Intenta de nuevo 🔄"
+        }
     }
 }
-
 
 
 
 #Preview {
     ContentView()
 }
+
