@@ -17,7 +17,7 @@ struct WeatherService {
         
         guard !city.isEmpty else { throw WeatherError.cityNotFound } //"Asegúrate que city NO esté vacío — si no, lanza error"
         
-        guard city != "Error" else { throw WeatherError.noInternet} // "Asegúrate que city NO sea 'error' — si no, lanza error"
+        guard city != "error" else { throw WeatherError.noInternet} // "Asegúrate que city NO sea 'error' — si no, lanza error"
         
         // si llegamos aquí → todo está bien ✅
         print("Clima encontrado para \(city)")
