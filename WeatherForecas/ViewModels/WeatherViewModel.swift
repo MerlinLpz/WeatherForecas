@@ -20,17 +20,20 @@ class WeatherViewModel: ObservableObject {
     
     //creamos la primera funciones
     func loadWeather() {
-        let service = WeatherService()
-        do {
-            let days = try service.fetchWeather(for: "Milano")
-            self.days = days
-            state = .success
+        Task {
+            let service = WeatherService()
             
-        } catch let error as WeatherError {
-            state = .error(error)
-            
-        } catch {
-            state = .error(.unknown) //.unknown -> error desconocido
+            do {
+                let days = try await service.fetchWeather(for: "Milano")
+                self.days = days
+                state = .success
+                
+            } catch let error as WeatherError {
+                state = .error(error)
+                
+            } catch {
+                state = .error(.unknown) //.unknown -> error desconocido
+            }
         }
     }
     
