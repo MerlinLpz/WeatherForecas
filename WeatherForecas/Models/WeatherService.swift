@@ -39,12 +39,10 @@ struct WeatherInfo: Codable {
 struct WeatherService {
     
     //Primer - Paso - async throws La función ahora tarda tiempo, entonces necesita async:
-    private let apiKey = "8f1d6348ee08e51ef00a12f85d485b45"
-    
     func fetchWeather(for city: String) async throws  -> [DayWeather] {
         
         //Construir la url
-        let urlString = "https://api.openweathermap.org/data/2.5/forecast?q=\(city)&appid=\(apiKey)&units=metric&cnt=40"
+        let urlString = "https://api.openweathermap.org/data/2.5/forecast?q=\(city)&appid=\(Secrets.apiKey)&units=metric&cnt=40"
         
         guard let url = URL(string: urlString) else {
             throw WeatherError.cityNotFound
