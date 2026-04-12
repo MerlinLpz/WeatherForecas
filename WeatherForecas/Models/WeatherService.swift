@@ -44,7 +44,7 @@ struct WeatherService {
     func fetchWeather(for city: String) async throws  -> [DayWeather] {
         
         //Construir la url
-        let urlString = "https://api.openweathermap.org/data/2.5/forecast?q=\(city)&appid=\(apiKey)&units=metric&cnt=7"
+        let urlString = "https://api.openweathermap.org/data/2.5/forecast?q=\(city)&appid=\(apiKey)&units=metric&cnt=40"
         
         guard let url = URL(string: urlString) else {
             throw WeatherError.cityNotFound
@@ -60,12 +60,49 @@ struct WeatherService {
         // Paso 3.1 — decodificar el JSON
         let response = try JSONDecoder().decode(ForecastResponse.self, from: data)
         
+       
+        // Filtrar un resultado por día
+        var seenDays: Set<String> = []
+        let uniqueItems = response.list.filter { item in
+            
+            let day = dayName(from: item.dt_txt)
+            if seenDays.contains(day) {
+                return false
+                
+            }else {
+                seenDays.insert(day)
+                return true
+            }
+        }
+        
         // Paso 4 — convertir ForecastItem en DayWeather
-        let days = response.list.map { item in
-            DayWeather(day: item.dt_txt, isRainy: item.weather.first?.main == "Rain", high: Int(item.main.temp_max), low: Int(item.main.temp_min))
+        let days = uniqueItems.map { item in
+            
+            DayWeather(
+                day: dayName(from: item.dt_txt),
+                isRainy: item.weather.first?.main == "Rain",
+                high: Int(item.main.temp_max),
+                low: Int(item.main.temp_min)
+            )
             
         }
         
         return days
+    }
+    
+    //formato fecha - Ahora mismo  - "2026-04-12 12:00:00"
+    //Nosotros queremos mostrar asi - "Sun"  // el día de la semana abreviado
+    private func dayName(from dateString: String) -> String {
+        let inputFormatter = DateFormatter()                   // inputFormatter - formato de entrada
+        inputFormatter.dateFormat = "yyyy-MM-dd HH:mm:ss"
+        
+        let outputFormatters = DateFormatter()
+        outputFormatters.dateFormat = "EEE"     // "EEE" = Mon, Tue, Wed...
+        
+        guard let date = inputFormatter.date(from: dateString) else {
+            return dateString   // si falla devuelve el string original
+        }
+        
+        return outputFormatters.string(from: date)
     }
 }
